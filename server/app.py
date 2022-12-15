@@ -83,4 +83,4 @@ def menu():
         return render_template("error.html", error_message = e)  # Renders a page with the error.
 
 if __name__ == '__main__':
-	app.run(debug=True)
+	app.run(ssl_context=('keys/cert.pem', 'keys/key.pem'))
