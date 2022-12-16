@@ -1,12 +1,13 @@
 import psycopg2
 import psycopg2.extras
 import hashlib
-from "cfg/database_cfg" import DB_CONNECTION_STRING
+from cfg.database_cfg import DB_CONNECTION_STRING
 
 #   CONNECTION
 # -------------- #
 # connect with db
 def connect():
+	print(DB_CONNECTION_STRING)
 	try:
 		db_connection = psycopg2.connect(DB_CONNECTION_STRING)
 		cursor = db_connection.cursor(cursor_factory=psycopg2.extras.DictCursor)

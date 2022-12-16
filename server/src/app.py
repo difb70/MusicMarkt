@@ -87,5 +87,4 @@ def menu():
 if __name__ == '__main__':
     # create database connection
     connection, cursor = db.connect()
-	app.run(ssl_context=('keys/cert.pem', 'keys/key.pem'))
-    
+    app.run(ssl_context=('keys/cert.pem', 'keys/key.pem'))
