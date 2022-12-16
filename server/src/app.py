@@ -1,4 +1,5 @@
-from flask import Flask from flask import render_template, redirect, url_for, request 
+from flask import Flask
+from flask import render_template, redirect, url_for, request
 import database_api as db
 
 app = Flask(__name__)
