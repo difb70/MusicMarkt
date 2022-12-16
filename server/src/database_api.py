@@ -1,12 +1,7 @@
 import psycopg2
 import psycopg2.extras
 import hashlib
-
-DB_HOST = "127.0.0.1"
-DB_USER = "tommy"
-DB_PASSWORD = "tommy123"
-DB_DATABASE = "musicmarkt"
-DB_CONNECTION_STRING = f"host={DB_HOST} dbname={DB_DATABASE} user={DB_USER} password={DB_PASSWORD}"
+from "cfg/database_cfg" import DB_CONNECTION_STRING
 
 #   CONNECTION
 # -------------- #

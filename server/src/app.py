@@ -1,8 +1,9 @@
 from flask import Flask
 from flask import render_template, redirect, url_for, request
-import databaseAPI
+import database_api as db
 
 app = Flask(__name__)
+connection, cursor = (None, None)
 
 #################################################################################
 #
@@ -84,4 +85,7 @@ def menu():
         return render_template("error.html", error_message = e)  # Renders a page with the error.
 
 if __name__ == '__main__':
+    # create database connection
+    connection, cursor = db.connect()
 	app.run(ssl_context=('keys/cert.pem', 'keys/key.pem'))
+    
