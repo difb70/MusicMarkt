@@ -2,30 +2,34 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Welcome!</P></title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <title>MusicMarkt</title>
+
+    <style>
+        .top-padding{
+            padding-top: 250px;
+        }
+    </style>
+
 </head>
 <body>
-    <div>
-        <a href="login"class="btnop">Login</a>
-        <a href="register" class="btnop">Register</a>
+    <nav class="navbar navbar-dark bg-dark">
+        <a class="navbar-brand" href="#">MusicMarkt</a>
+        <div>
+            <a class="btn btn-outline-secondary" href="login"class="btnop">Login</a>
+            <a class="btn btn-outline-secondary" href="register" class="btnop">Register</a>
+        </div>
+    </nav>
+    
+    <div class="top-padding">        
+        <div class="container h-100">
+            <div class="row align-items-center h-100">
+                <div class="col-6 mx-auto">
+                    <div class="jumbotron">
+                        <h1 class="display-1"> MusicMarkt </h1>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </body>
-</html>
-
-<style>
-    .btnop {
-        background: #298371;
-        color: white;
-        width: 250px;
-        height: 50px;
-        margin-right: 10px;
-        padding: 0;
-        display: inline-block;
-        line-height: 50px;
-        text-align: center;
-        font-size: 2em;
-        border-radius: 10px;
-        border-width: 0px;
-        text-decoration: none;
-    }
-  </style>
