@@ -7,14 +7,14 @@ drop table scoreboard cascade;
 
 create table client (
     cid SERIAL,
-    name varchar(80) not null,
+    name varchar(80) not null unique,
     pass varchar(64) not null,
     constraint pk_user primary key(cid)
 );
 
 create table artist (
     aid SERIAL,
-    name varchar(80) not null,
+    name varchar(80) not null unique,
     constraint pk_artist primary key(aid)
 );
 
@@ -29,7 +29,7 @@ create table scoreboard (
 
 create table product (
     pid SERIAL,
-    name varchar(80) not null,
+    name varchar(80) not null unique,
     type varchar(80) not null,
     aid integer not null,
     price money not null,
