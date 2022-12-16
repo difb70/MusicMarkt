@@ -1,9 +1,7 @@
-from flask import Flask
-from flask import render_template, redirect, url_for, request
-import database_api as db
+lsfrom flask import Flask from flask import render_template, redirect, 
+url_for, request import database_api as db
 
 app = Flask(__name__)
-connection, cursor = (None, None)
 
 #################################################################################
 #
@@ -29,18 +27,14 @@ def register():
     if request.method == 'POST':
 
         #(TODO) verify if that email or that username is already registered in the database'
-
         #(TODO) else, redirect him to 'menu'
-
-        if request.form['email'] != 'admin@gmail.com' or request.form['username'] != 'admin' or request.form['password'] != 'admin':
-            error = 'Invalid Credentials. Please try again.'
-        
-        else:
-            print("email: ", request.form['email'])
-            print("username: ", request.form['username'])
-            print("password: ", request.form['password'])
-            
-            return redirect(url_for('menu'))\
+        username = request.form['username']
+        password = request.form['password']
+        try:
+            db.create_client(username, password)
+            return redirect(url_for('menu'))
+        except:
+            error = "User already exists"
 
     return render_template('register.html', error=error)
 
@@ -56,17 +50,15 @@ def login():
     if request.method == 'POST':
 
         #(TODO) if user is not registered in database, return 'Invalid Credentials. Please try again.'
-
         #(TODO) else, redirect him to 'menu'
 
         if request.form['username'] != 'admin' or request.form['password'] != 'admin':
             error = 'Invalid Credentials. Please try again.'
-        
+
         else:
-            
+
             print("username: ", request.form['username'])
             print("password: ", request.form['password'])
-            
             return redirect(url_for('menu'))\
 
     return render_template('login.html', error=error)
@@ -86,5 +78,6 @@ def menu():
 
 if __name__ == '__main__':
     # create database connection
-    connection, cursor = db.connect()
+    db.connect()
     app.run(ssl_context=('keys/cert.pem', 'keys/key.pem'))
+    db.close()

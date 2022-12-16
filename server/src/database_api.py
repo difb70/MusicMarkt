@@ -3,22 +3,23 @@ import psycopg2.extras
 import hashlib
 from cfg.database_cfg import DB_CONNECTION_STRING
 
+connection, cursor = (None, None)
+
 #   CONNECTION
 # -------------- #
 # connect with db
 def connect():
-	print(DB_CONNECTION_STRING)
+	global connection, cursor
 	try:
-		db_connection = psycopg2.connect(DB_CONNECTION_STRING)
-		cursor = db_connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
+		connection = psycopg2.connect(DB_CONNECTION_STRING)
+		cursor = connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
 	except:
 		print("Error : Unable to connect to the database")
 		exit()
 
-	return db_connection, cursor
-
 # close db connection
-def close(connection, cursor):
+def close():
+	global connection, cursor
 	connection.close()
 	cursor.close()
 
@@ -122,7 +123,7 @@ def get_scoreboard (aid):
 
 
 if __name__ == '__main__':
-	connection, cursor = connect()
+	connect()
 
 	print(check_password(1, "tommy123"))
 	get_scoreboard(1)
@@ -130,4 +131,4 @@ if __name__ == '__main__':
 	get_scoreboard(3)
 	get_scoreboard(4)
 
-	close(connection, cursor)
+	close()
