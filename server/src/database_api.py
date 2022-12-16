@@ -52,7 +52,7 @@ PRICE = "price"
 #    A P I
 # ------------ #
 # create user
-def create_client(name, password):
+def create_user(username, password):
 	global connection, cursor
 
 	password = str.encode(password)
@@ -60,20 +60,32 @@ def create_client(name, password):
 
 	query = f"INSERT INTO {CLIENT} ({CNAME}, {CPASS}) VALUES (%s, %s);"
 
-	cursor.execute(query, (name, digest))
+	cursor.execute(query, (username, digest))
 	connection.commit()
 
-
-def check_password(cid, password):
+def get_cid (username):
 	global connection, cursor
+	
+	query = f"SELECT {CID} FROM {CLIENT} WHERE {CNAME} = %s;"
+	cursor.execute(query, (username, ))
+	
+	# check if the username exists
+	if (cursor.rowcount == 0):
+		return None
 
+	cid = cursor.fetchone()[0]
+	return cid
+
+def check_password(username, password):
+	global connection, cursor
+    
 	password = str.encode(password)
 	digest = hashlib.sha256(password).hexdigest()
 
 	query = f"SELECT {CPASS} FROM {CLIENT} WHERE {CID} = %s;"
-	cursor.execute(query, (cid, ))
+	cursor.execute(query, (username, ))
 
-	# cid doesnt exist
+	# user doesnt exist
 	if (cursor.rowcount == 0):
 		return False
 

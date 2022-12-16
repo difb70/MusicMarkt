@@ -31,7 +31,7 @@ def register():
         username = request.form['username']
         password = request.form['password']
         try:
-            db.create_client(username, password)
+            db.create_user(username, password)
             return redirect(url_for('menu'))
         except:
             error = "User already exists"
@@ -51,15 +51,14 @@ def login():
 
         #(TODO) if user is not registered in database, return 'Invalid Credentials. Please try again.'
         #(TODO) else, redirect him to 'menu'
+        username = request.form['username'] 
+        password = request.form['password']
 
-        if request.form['username'] != 'admin' or request.form['password'] != 'admin':
-            error = 'Invalid Credentials. Please try again.'
-
-        else:
-
-            print("username: ", request.form['username'])
-            print("password: ", request.form['password'])
-            return redirect(url_for('menu'))\
+        # check if the credentials where correct
+        if (db.check_password(username, password)):
+            return redirect(url_for('menu'))
+        else :
+            error = "Incorrect credentials"
 
     return render_template('login.html', error=error)
 
