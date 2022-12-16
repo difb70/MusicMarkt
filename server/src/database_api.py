@@ -82,7 +82,7 @@ def check_password(username, password):
 	password = str.encode(password)
 	digest = hashlib.sha256(password).hexdigest()
 
-	query = f"SELECT {CPASS} FROM {CLIENT} WHERE {CID} = %s;"
+	query = f"SELECT {CPASS} FROM {CLIENT} WHERE {CNAME} = %s;"
 	cursor.execute(query, (username, ))
 
 	# user doesnt exist
