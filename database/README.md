@@ -1,5 +1,5 @@
 # Database : 
-The chosen database was PostgreSQL, because the group had already some experience with it and how easy it is to setup
+The chosen database was PostgreSQL, because the group had already some experience with it and given how easy it is to setup
 
 ### Setup :
 1. Download postgres into your machine
