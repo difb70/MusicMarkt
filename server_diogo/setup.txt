@@ -1,0 +1,8 @@
+run to generate a certificate:
+
+openssl req -new -x509 -keyout cert.pem -out cert.pem -days 365 -nodes
+
+
+on the client side, run:
+
+export REQUESTS_CA_BUNDLE=PATH_TO_CERTIFICATE
