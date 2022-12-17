@@ -1,10 +1,24 @@
-import http.server, ssl, socketserver
+import socket
+import ssl
 
-context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-context.load_cert_chain("cert.pem") # PUT YOUR cert.pem HERE
-server_address = ("127.0.0.1", 4443)  # CHANGE THIS IP & PORT
+HOST = "127.0.0.1"
+PORT = 60000
 
-handler = http.server.SimpleHTTPRequestHandler
-with socketserver.TCPServer(server_address, handler) as httpd:
-    httpd.socket = context.wrap_socket(httpd.socket, server_side=True)
-    httpd.serve_forever()
+server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+
+server = ssl.wrap_socket(
+    server, server_side=True, certfile="cert.pem"
+)
+
+if __name__ == "__main__":
+    server.bind((HOST, PORT))
+    server.listen(1)
+
+    while True:
+        connection, client_address = server.accept()
+        while True:
+            data = connection.recv(1024)
+            if not data:
+                break
+            print(f"Received: {data.decode('utf-8')}")
