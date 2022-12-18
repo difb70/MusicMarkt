@@ -31,6 +31,7 @@ create table product (
     pid SERIAL,
     name varchar(80) not null unique,
     type varchar(80) not null,
+    state varchar(80) not null,
     aid integer not null,
     price money not null,
     constraint pk_product primary key(pid),
