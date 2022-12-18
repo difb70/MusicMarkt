@@ -1,8 +1,5 @@
-run to generate a certificate:
+follow the tutorial in here:
 
-openssl req -new -x509 -keyout cert.pem -out cert.pem -days 365 -nodes
+https://gist.github.com/KeithYeh/bb07cadd23645a6a62509b1ec8986bbc
 
-
-on the client side, run:
-
-export REQUESTS_CA_BUNDLE=PATH_TO_CERTIFICATE
+(PS: where it says DNS:example.com put DNS:localhost)
