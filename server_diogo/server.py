@@ -2,8 +2,13 @@ import socket
 import ssl
 import os
 import signal
-from processTLSMessage import *
-from processTCPMessage import *
+import sys
+
+sys.path.append('TLS')
+sys.path.append('TCP')
+
+from TLS.processTLSMessage import *
+from TCP.processTCPMessage import *
 
 HOST = "localhost"
 PORT_TLS = 60000
