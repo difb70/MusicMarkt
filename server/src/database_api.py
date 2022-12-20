@@ -63,9 +63,9 @@ ATTEMPTS = "attempts"
 def create_user(username, password):
 	global connection, cursor
 
-	password = str.encode(password)
 	salt = randint(0, 2**15)
-	digest = hashlib.sha256(password + str(salt)).hexdigest()
+	password = str.encode(password + str(salt))
+	digest = hashlib.sha256(password).hexdigest()
 
 
 
@@ -101,8 +101,8 @@ def check_password(username, password):
 	user_digest = response[0]
 	salt = response[1]
 
-	password = str.encode(password)
-	digest = hashlib.sha256(password + str(salt)).hexdigest()
+	password = str.encode(password + str(salt))
+	digest = hashlib.sha256(password).hexdigest()
 
 	return user_digest == digest
 
