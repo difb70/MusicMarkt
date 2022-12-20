@@ -143,6 +143,15 @@ def get_products():
 	products = copyRecords(cursor)
 	return products
 
+def get_artists():
+	global connection, cursor
+
+	query = f"SELECT {AID}, {ANAME} FROM {ARTIST}"
+	cursor.execute(query)
+
+	artists = copyRecords(cursor)
+	return artists
+
 
 def get_scoreboard (aid):
 	global connection, cursor
