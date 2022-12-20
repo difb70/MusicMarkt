@@ -136,7 +136,7 @@ def buy_item (cid, pid):
 
 def get_products():
 	global connection, cursor
-	
+
 	query = f"SELECT {PID}, {PNAME}, {PSTATE}, {PRICE} FROM {PRODUCT}"
 	cursor.execute(query)
 
@@ -148,15 +148,11 @@ def get_scoreboard (aid):
 	global connection, cursor
 
 	query = f"SELECT {AMOUNT}, {CID} FROM {SCOREBOARD} WHERE {AID} = %s ORDER BY {AMOUNT} DESC;"
-	cursor.execute(query, (aid, ))
+        cursor.execute(query, (aid, ))
 
-	print(f"aid : {aid}")
-	i = 1
-	for record in cursor:
-		print(f"{i} - user : {record[1]}    amount : {record[0]}")
-		i += 1
+        scoreboard = copyRecords(cursor)
+        return scoreboard
 
-	print("==================")
 
 
 def copyRecords (cursor):
@@ -165,17 +161,3 @@ def copyRecords (cursor):
 		records.append(record)
 
 	return records
-
-
-
-
-if __name__ == '__main__':
-	connect()
-
-	print(check_password(1, "tommy123"))
-	get_scoreboard(1)
-	get_scoreboard(2)
-	get_scoreboard(3)
-	get_scoreboard(4)
-
-	close()
