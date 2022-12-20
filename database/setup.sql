@@ -4,11 +4,23 @@ drop table client cascade;
 drop table product cascade;
 drop table artist cascade;
 drop table scoreboard cascade;
+drop table factor_authentication cascade;
+
+create table factor_authentication (
+    cid integer not null,
+    code varchar(4) not null,
+    attempt_ts integer not null,
+    ban_ts integer not null,
+    attempts smallint not null,
+    constraint pk_factor_authentication primary key(cid)
+);
 
 create table client (
     cid SERIAL,
     name varchar(80) not null unique,
     pass varchar(64) not null,
+    salt integer not null,
+    constraint fk_factor_authentication foreign key(cid) references factor_authentication(cid),
     constraint pk_user primary key(cid)
 );
 
