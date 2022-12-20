@@ -3,6 +3,7 @@ from flask import render_template, redirect, url_for, request
 import database_api as db
 
 app = Flask(__name__)
+PRODUCT_PATH = "product/"
 
 #################################################################################
 #
@@ -72,7 +73,8 @@ def login():
 @app.route('/menu')
 def menu():
     try:
-        return render_template("menu.html")
+        products = db.get_products()
+        return render_template("menu.html", products=products, product_path=PRODUCT_PATH)
     except Exception as e:
         return render_template("error.html", error_message = e)  # Renders a page with the error.
 

@@ -16,5 +16,34 @@
     <nav class="navbar navbar-dark bg-dark">
         <a class="navbar-brand" href="#">MusicMarkt</a>
     </nav>
+    {% if products %}
+    {% if len(products) > 0 %}
+        <table border="2px">
+            <thead>
+                <tr>
+                    <th>name</th>
+                    <th>price</th>
+                    <th>state</th>
+                    <th></th> <!-- buy button -->
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in products %}
+                    <tr>
+                        <td>{{ record[1] }}</td>
+                        <td>{{ record[3] }}</td>
+                        <td>{{ record[2] }}</td>
+                        <td> <a href="/{{ product_path }}buy/?pid={{ record[0] }}">buy</a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p> This page is empty </p>
+    {% endif %}
+    {% else %}
+        <p> Error: obtaining information from database! </p>
+    {% endif %}
+
     <h1> YOU ARE LOGGED IN</h1>
 </body>
