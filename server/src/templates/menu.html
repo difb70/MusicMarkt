@@ -16,34 +16,38 @@
     <nav class="navbar navbar-dark bg-dark">
         <a class="navbar-brand" href="#">MusicMarkt</a>
     </nav>
-    {% if products %}
-    {% if len(products) > 0 %}
-        <table border="2px">
-            <thead>
-                <tr>
-                    <th>name</th>
-                    <th>price</th>
-                    <th>state</th>
-                    <th></th> <!-- buy button -->
-                </tr>
-            </thead>
-            <tbody>
-                {% for product in products %}
-                    <tr>
-                        <td>{{ record[1] }}</td>
-                        <td>{{ record[3] }}</td>
-                        <td>{{ record[2] }}</td>
-                        <td> <a href="/{{ product_path }}buy/?pid={{ record[0] }}">buy</a></td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    {% else %}
-        <p> This page is empty </p>
-    {% endif %}
-    {% else %}
-        <p> Error: obtaining information from database! </p>
-    {% endif %}
 
-    <h1> YOU ARE LOGGED IN</h1>
+    <div class="container">
+        <br>
+        <h1>Products</h1>
+        <br><br>
+        {% if products %}
+        {% if products|length > 1 %}
+            <table class="table"> 
+                <thead>
+                    <tr>
+                        <th>name</th>
+                        <th>price</th>
+                        <th>state</th>
+                        <th></th> <!-- buy button -->
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for product in products %}
+                        <tr>
+                            <td>{{ product[1] }}</td>
+                            <td>{{ product[3] }}</td>
+                            <td>{{ product[2] }}</td>
+                            <td> <a class="btn btn-outline-dark" href="/{{ product_path }}buy/?pid={{ product[0] }}">buy</a></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p> This page is empty </p>
+        {% endif %}
+        {% else %}
+            <p> Error: obtaining information from database! </p>
+        {% endif %}
+    </div>
 </body>
