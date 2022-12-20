@@ -7,12 +7,12 @@ drop table artist cascade;
 drop table scoreboard cascade;
 
 create table factor_authentication (
-    cid integer not null,
-    code varchar(4) not null,
+    name varchar(80) not null,
+    code varchar(4),
     attempt_ts integer not null,
     ban_ts integer not null,
     attempts smallint not null,
-    constraint pk_factor_authentication primary key(cid)
+    constraint pk_factor_authentication primary key(name)
 );
 
 create table client (
@@ -20,7 +20,7 @@ create table client (
     name varchar(80) not null unique,
     pass varchar(64) not null,
     salt integer not null,
-    constraint fk_factor_authentication foreign key(cid) references factor_authentication(cid),
+    constraint fk_factor_authentication foreign key(name) references factor_authentication(name),
     constraint pk_user primary key(cid)
 );
 

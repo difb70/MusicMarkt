@@ -68,6 +68,8 @@ def create_user(username, password):
 	digest = hashlib.sha256(password).hexdigest()
 
 
+	query = f"INSERT INTO {TWO_FA} ({CNAME}, {ATTEMPT_TS}, {BAN_TS}, {ATTEMPTS}) VALUES (%s, %s, %s, %s);"
+	cursor.execute(query, (username, 0, 0, 0))
 
 	query = f"INSERT INTO {CLIENT} ({CNAME}, {CPASS}, {CSALT}) VALUES (%s, %s, %s);"
 
