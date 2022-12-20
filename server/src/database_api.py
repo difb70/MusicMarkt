@@ -49,6 +49,7 @@ AMOUNT = "amount"
 PID = "pid"
 PNAME = "name"
 PTYPE = "type"
+PSTATE = "state"
 PRICE = "price"
 
 CODE = "code"
@@ -67,10 +68,11 @@ def create_user(username, password):
 	password = str.encode(password + str(salt))
 	digest = hashlib.sha256(password).hexdigest()
 
-
+	# create user entry in the 2fa table
 	query = f"INSERT INTO {TWO_FA} ({CNAME}, {ATTEMPT_TS}, {BAN_TS}, {ATTEMPTS}) VALUES (%s, %s, %s, %s);"
 	cursor.execute(query, (username, 0, 0, 0))
 
+	# create user the actual user
 	query = f"INSERT INTO {CLIENT} ({CNAME}, {CPASS}, {CSALT}) VALUES (%s, %s, %s);"
 
 	cursor.execute(query, (username, digest, salt))
@@ -133,7 +135,13 @@ def buy_item (cid, pid):
 	return True
 
 def get_products():
-	return
+	global connection, cursor
+	
+	query = f"SELECT {PID}, {PNAME}, {PSTATE}, {PRICE} FROM {PRODUCT}"
+	cursor.execute(query)
+
+	products = copyRecords(cursor)
+	return products
 
 
 def get_scoreboard (aid):
@@ -149,6 +157,14 @@ def get_scoreboard (aid):
 		i += 1
 
 	print("==================")
+
+
+def copyRecords (cursor):
+	records = []
+	for record in cursor:
+		records.append(record)
+
+	return records
 
 
 
