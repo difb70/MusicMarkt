@@ -148,10 +148,10 @@ def get_scoreboard (aid):
 	global connection, cursor
 
 	query = f"SELECT {AMOUNT}, {CID} FROM {SCOREBOARD} WHERE {AID} = %s ORDER BY {AMOUNT} DESC;"
-        cursor.execute(query, (aid, ))
+	cursor.execute(query, (aid, ))
 
-        scoreboard = copyRecords(cursor)
-        return scoreboard
+	scoreboard = copyRecords(cursor)
+	return scoreboard
 
 
 
