@@ -1,6 +1,7 @@
 import psycopg2
 import psycopg2.extras
 import hashlib
+from random import randint
 from cfg.database_cfg import DB_CONNECTION_STRING
 
 connection, cursor = (None, None)
@@ -31,12 +32,14 @@ CLIENT = "client"
 PRODUCT = "product"
 ARTIST = "artist"
 SCOREBOARD = "scoreboard"
+TWO_FA = "factor_authentication" 
 
 #   COLUMNS
 # ------------ #
 CID = "cid"
 CNAME = "name"
 CPASS = "pass"
+CSALT = "salt"
 
 AID = "aid"
 ANAME = "name"
@@ -48,6 +51,11 @@ PNAME = "name"
 PTYPE = "type"
 PRICE = "price"
 
+CODE = "code"
+ATTEMPT_TS = "attempt_ts"
+BAN_TS = "ban_ts"
+ATTEMPTS = "attempts"
+
 
 #    A P I
 # ------------ #
@@ -56,11 +64,14 @@ def create_user(username, password):
 	global connection, cursor
 
 	password = str.encode(password)
-	digest = hashlib.sha256(password).hexdigest()
+	salt = randint(0, 2**15)
+	digest = hashlib.sha256(password + str(salt)).hexdigest()
 
-	query = f"INSERT INTO {CLIENT} ({CNAME}, {CPASS}) VALUES (%s, %s);"
 
-	cursor.execute(query, (username, digest))
+
+	query = f"INSERT INTO {CLIENT} ({CNAME}, {CPASS}, {CSALT}) VALUES (%s, %s, %s);"
+
+	cursor.execute(query, (username, digest, salt))
 	connection.commit()
 
 def get_cid (username):
@@ -78,18 +89,21 @@ def get_cid (username):
 
 def check_password(username, password):
 	global connection, cursor
-    
-	password = str.encode(password)
-	digest = hashlib.sha256(password).hexdigest()
 
-	query = f"SELECT {CPASS} FROM {CLIENT} WHERE {CNAME} = %s;"
+	query = f"SELECT {CPASS}, {CSALT} FROM {CLIENT} WHERE {CNAME} = %s;"
 	cursor.execute(query, (username, ))
 
 	# user doesnt exist
 	if (cursor.rowcount == 0):
 		return False
 
-	user_digest = cursor.fetchone()[0]
+	response = cursor.fetchone()
+	user_digest = response[0]
+	salt = response[1]
+
+	password = str.encode(password)
+	digest = hashlib.sha256(password + str(salt)).hexdigest()
+
 	return user_digest == digest
 
 # this needs to be a session created when 
@@ -115,6 +129,9 @@ def buy_item (cid, pid):
 	connection.commit()
 
 	return True
+
+def get_products():
+	return
 
 
 def get_scoreboard (aid):

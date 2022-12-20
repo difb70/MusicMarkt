@@ -1,10 +1,10 @@
 -- drop previous tables
 
+drop table factor_authentication cascade;
 drop table client cascade;
 drop table product cascade;
 drop table artist cascade;
 drop table scoreboard cascade;
-drop table factor_authentication cascade;
 
 create table factor_authentication (
     cid integer not null,
