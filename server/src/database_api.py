@@ -153,14 +153,27 @@ def get_artists():
 	artists = copyRecords(cursor)
 	return artists
 
+def get_artist_name(aid):
+	global connection, cursor
+
+	query = f"SELECT {ANAME} FROM {ARTIST} WHERE {AID} = %s"
+	cursor.execute(query, (aid, ))
+	
+	# artist doesnt exist
+	if (cursor.rowcount == 0):
+		return None
+
+	name = cursor.fetchone()[0]
+	return name
 
 def get_scoreboard (aid):
 	global connection, cursor
 
-	query = f"SELECT {AMOUNT}, {CID} FROM {SCOREBOARD} WHERE {AID} = %s ORDER BY {AMOUNT} DESC;"
+	query = f"SELECT {AMOUNT}, {CNAME} FROM {SCOREBOARD} NATURAL JOIN {CLIENT} WHERE {AID} = %s ORDER BY {AMOUNT} DESC;"
 	cursor.execute(query, (aid, ))
 
 	scoreboard = copyRecords(cursor)
+	print(scoreboard)
 	return scoreboard
 
 # two factor authentication funcions 

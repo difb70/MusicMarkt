@@ -86,6 +86,17 @@ def menu():
     except Exception as e:
         return render_template("error.html", error_message = e)  # Renders a page with the error.
 
+@app.route('/artists/scoreboard/')
+def menu():
+    try:
+        aid = request.args.get("aid")
+        artist = db.get_artist_name(aid)
+        scoreboard = db.get_scoreboard(aid)
+        
+        return render_template("artists.html", scoreboard=scoreboard, artist=artist)
+    except Exception as e:
+        return render_template("error.html", error_message = e)  # Renders a page with the error.
+
 
 if __name__ == '__main__':
     # create database connection
