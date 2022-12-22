@@ -4,41 +4,33 @@
     <meta charset="utf-8">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <title>MusicMarkt</title>
-
-    <style>
-        .top-padding{
-            padding-top: 250px;
-        }
-    </style>
-
 </head>
 <body>
     <nav class="navbar navbar-dark bg-dark">
         <a class="navbar-brand" href="#">MusicMarkt</a>
+        <div>
+            <a class="btn btn-outline-secondary" href="/products" class="btnop">Products</a>
+        </div>
     </nav>
 
     <div class="container">
         <br>
-        <h1>Products</h1>
+        <h1>Artists</h1>
         <br><br>
-        {% if products %}
-        {% if products|length > 1 %}
+        {% if artists %}
+        {% if artists|length > 1 %}
             <table class="table"> 
                 <thead class="thead-dark">
                     <tr>
                         <th>name</th>
-                        <th>price</th>
-                        <th>state</th>
-                        <th></th> <!-- buy button -->
+                        <th></th> <!-- scoreboard button -->
                     </tr>
                 </thead>
                 <tbody>
-                    {% for product in products %}
+                    {% for artist in artists %}
                         <tr>
-                            <td>{{ product[1] }}</td>
-                            <td>{{ product[3] }}</td>
-                            <td>{{ product[2] }}</td>
-                            <td> <a class="btn btn-outline-dark" href="/{{ product_path }}buy/?pid={{ product[0] }}">buy</a></td>
+                            <td>{{ artist[1] }}</td>
+                            <td> <a class="btn btn-outline-dark" href="/artists/scoreboard/?id={{ artist[0] }}">scoreboard</a></td>
                         </tr>
                     {% endfor %}
                 </tbody>

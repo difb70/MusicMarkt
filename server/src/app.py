@@ -3,7 +3,7 @@ from flask import render_template, redirect, url_for, request
 import database_api as db
 
 app = Flask(__name__)
-PRODUCT_PATH = "product/"
+PRODUCT_PATH = "products/"
 
 #################################################################################
 #
@@ -70,13 +70,22 @@ def login():
 #                               Menu Page
 #
 #################################################################################
-@app.route('/menu')
+@app.route('/products')
 def menu():
     try:
         products = db.get_products()
-        return render_template("menu.html", products=products, product_path=PRODUCT_PATH)
+        return render_template("products.html", products=products)
     except Exception as e:
         return render_template("error.html", error_message = e)  # Renders a page with the error.
+
+@app.route('/artists')
+def menu():
+    try:
+        artists = db.get_artists()
+        return render_template("artists.html", artists=artists)
+    except Exception as e:
+        return render_template("error.html", error_message = e)  # Renders a page with the error.
+
 
 if __name__ == '__main__':
     # create database connection
