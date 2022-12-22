@@ -2,6 +2,7 @@ import psycopg2
 import psycopg2.extras
 import hashlib
 from random import randint
+from time import time
 from cfg.database_cfg import DB_CONNECTION_STRING
 
 connection, cursor = (None, None)
@@ -161,6 +162,26 @@ def get_scoreboard (aid):
 
 	scoreboard = copyRecords(cursor)
 	return scoreboard
+
+# two factor authentication funcions 
+def generate_code(cid, valid_period):
+	global connection, cursor
+
+	query = f"UPDATE {TWO_FA} SET {CODE} = %s, {ATTEMPT_TS} = %s WHERE {CID} = %s"
+
+	# generate code
+	code = ""
+	for _ in range(4):
+		code += str(randint(0, 9))
+
+	# calculate end time of attempt (aka attempt_ts)
+	attempt_ts = time() + valid_period
+	cursor.execute(query, (code, attempt_ts, cid))
+	
+	connection.commit()
+
+def check_code():
+	return
 
 
 
