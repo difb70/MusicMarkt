@@ -20,7 +20,7 @@
         <h3>{{ artist }}</h3>
         <br><br>
         {% if scoreboard %}
-        {% if scoreboard|length > 0 %}
+        {% if scoreboard[0] != [] %}
             <table class="table"> 
                 <thead class="thead-dark">
                     <tr>
