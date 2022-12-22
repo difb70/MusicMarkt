@@ -3,7 +3,6 @@ from flask import render_template, redirect, url_for, request
 import database_api as db
 
 app = Flask(__name__)
-PRODUCT_PATH = "products/"
 
 #################################################################################
 #
@@ -34,7 +33,7 @@ def register():
         password = request.form['password']
         try:
             db.create_user(username, password)
-            return redirect(url_for('menu'))
+            return redirect(url_for('products'))
         except:
             error = "User already exists"
 
@@ -53,12 +52,12 @@ def login():
 
         #(TODO) if user is not registered in database, return 'Invalid Credentials. Please try again.'
         #(TODO) else, redirect him to 'menu'
-        username = request.form['username'] 
+        username = request.form['username']
         password = request.form['password']
 
         # check if the credentials where correct
         if (db.check_password(username, password)):
-            return redirect(url_for('menu'))
+            return redirect(url_for('products'))
         else :
             error = "Incorrect credentials"
 
@@ -71,7 +70,7 @@ def login():
 #
 #################################################################################
 @app.route('/products')
-def menu():
+def products():
     try:
         products = db.get_products()
         return render_template("products.html", products=products)
@@ -79,7 +78,7 @@ def menu():
         return render_template("error.html", error_message = e)  # Renders a page with the error.
 
 @app.route('/artists')
-def menu():
+def artists():
     try:
         artists = db.get_artists()
         return render_template("artists.html", artists=artists)
