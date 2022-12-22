@@ -26,16 +26,15 @@
                     <tr>
                         <th>place</th>
                         <th>username</th>
-                        <th>points</th>
+                        <th>amount</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for place in range(scoreboard|length) %}
                         <tr>
                             <td>{{ place }}</td>
-                            <td>{{ product[3] }}</td>
-                            <td>{{ product[2] }}</td>
-                            <td> <a class="btn btn-outline-dark" href="/products/buy/?pid={{ product[0] }}">buy</a></td>
+                            <td>{{ scoreboard[1] }}</td>
+                            <td>{{ scoreboard[0] }}</td>
                         </tr>
                     {% endfor %}
                 </tbody>

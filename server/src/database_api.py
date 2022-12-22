@@ -173,7 +173,6 @@ def get_scoreboard (aid):
 	cursor.execute(query, (aid, ))
 
 	scoreboard = copyRecords(cursor)
-	print(scoreboard)
 	return scoreboard
 
 # two factor authentication funcions 
