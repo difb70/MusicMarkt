@@ -18,7 +18,7 @@
         <h1>Artists</h1>
         <br><br>
         {% if artists %}
-        {% if artists|length > 1 %}
+        {% if artists|length > 0 %}
             <table class="table"> 
                 <thead class="thead-dark">
                     <tr>
@@ -30,7 +30,7 @@
                     {% for artist in artists %}
                         <tr>
                             <td>{{ artist[1] }}</td>
-                            <td><div><a class="btn btn-outline-dark" href="/artists/scoreboard/?id={{ artist[0] }}">scoreboard</a></div<</td>
+                            <td><div><a class="btn btn-outline-dark" href="/artists/scoreboard/?aid={{ artist[0] }}">scoreboard</a></div<</td>
                         </tr>
                     {% endfor %}
                 </tbody>

@@ -173,6 +173,9 @@ def get_scoreboard (aid):
 	cursor.execute(query, (aid, ))
 
 	scoreboard = copyRecords(cursor)
+        if (scoreboard == []):
+                scoreboard = [[]]
+
 	return scoreboard
 
 # two factor authentication funcions 
