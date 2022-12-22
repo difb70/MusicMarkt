@@ -173,8 +173,8 @@ def get_scoreboard (aid):
 	cursor.execute(query, (aid, ))
 
 	scoreboard = copyRecords(cursor)
-        if (scoreboard == []):
-                scoreboard = [[]]
+	if (scoreboard == []):
+		scoreboard = [[]]
 
 	return scoreboard
 
