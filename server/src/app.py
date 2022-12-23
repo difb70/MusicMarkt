@@ -1,5 +1,6 @@
 from flask import Flask
 from flask import render_template, redirect, url_for, request
+import sys
 import database_api as db
 
 app = Flask(__name__)
@@ -57,11 +58,37 @@ def login():
 
         # check if the credentials where correct
         if (db.check_password(username, password)):
-            return redirect(url_for('products'))
+
+            db.generate_code(username)
+
+            return redirect(url_for('code'))
         else :
             error = "Incorrect credentials"
 
     return render_template('login.html', error=error)
+
+@app.route('/code', methods=['GET', 'POST'])
+def code():
+    error = None
+    if request.method == 'POST':
+        code = request.form['code']
+        print(code)
+
+        #TODO in here we should pass the name of the client associated to the session
+        name = 'difb70' # for debug
+        
+        status = db.check_code(name, code)
+        print("status: " + str(status))
+
+        if (status == 1): # Code checks
+            return redirect(url_for('products'))
+        elif (status == 0): # Code doesn't check but has more attempts
+            error = "Wrong code"
+        elif (status == -1): # Is banned
+            error = "You are banned for 5 min"
+
+    return render_template('code.html', error=error)
+    
 
 
 #################################################################################
@@ -103,5 +130,6 @@ def menu():
 if __name__ == '__main__':
     # create database connection
     db.connect()
+    # TODO for the Diogo pc to run, the code below should be replaced by app.run(ssl_context=('adhoc'))
     app.run(ssl_context=('keys/cert.pem', 'keys/key.pem'))
     db.close()

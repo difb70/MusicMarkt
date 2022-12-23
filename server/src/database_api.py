@@ -1,9 +1,27 @@
 import psycopg2
 import psycopg2.extras
 import hashlib
+import os
 from random import randint
-from time import time
+from datetime import *
+
+# TODO for the Diogo pc to run, the code below should be removed
 from cfg.database_cfg import DB_CONNECTION_STRING
+
+import mobileApp_api as mobileApp
+
+DB_HOST = "localhost"
+DB_USER = "postgres"
+DB_DATABASE = "musicmarkt"
+DB_PASSWORD = "postgres"
+
+# TODO for the Diogo pc to run, the code below should be uncommented
+#DB_CONNECTION_STRING = "host=%s port=5433 dbname=%s user=%s password=%s" % (
+#    DB_HOST,
+#    DB_DATABASE,
+#    DB_USER,
+#    DB_PASSWORD,
+#)
 
 connection, cursor = (None, None)
 
@@ -15,8 +33,8 @@ def connect():
 	try:
 		connection = psycopg2.connect(DB_CONNECTION_STRING)
 		cursor = connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
-	except:
-		print("Error : Unable to connect to the database")
+	except Exception as e :
+		print(e)
 		exit()
 
 # close db connection
@@ -41,6 +59,7 @@ CID = "cid"
 CNAME = "name"
 CPASS = "pass"
 CSALT = "salt"
+NAME = "name"
 
 AID = "aid"
 ANAME = "name"
@@ -179,24 +198,71 @@ def get_scoreboard (aid):
 	return scoreboard
 
 # two factor authentication funcions 
-def generate_code(cid, valid_period):
+def generate_code(name):
 	global connection, cursor
 
-	query = f"UPDATE {TWO_FA} SET {CODE} = %s, {ATTEMPT_TS} = %s WHERE {CID} = %s"
+	query = f"UPDATE {TWO_FA} SET {CODE} = %s, {ATTEMPT_TS} = %s WHERE {NAME} = %s"
 
-	# generate code
-	code = ""
-	for _ in range(4):
-		code += str(randint(0, 9))
+	while True:
+		# generate code
+		code = ""
+		for _ in range(4):
+			code += str(randint(0, 9))
 
-	# calculate end time of attempt (aka attempt_ts)
-	attempt_ts = time() + valid_period
-	cursor.execute(query, (code, attempt_ts, cid))
+		# calculate end time of attempt (aka attempt_ts)
+		attempt_ts = datetime.now().strftime("%d/%m/%Y, %H:%M:%S")
+		if(mobileApp.sendCode(code)):
+			break
+
+	cursor.execute(query, (code, attempt_ts, name))
 	
 	connection.commit()
 
-def check_code():
-	return
+def check_code(name, code):
+
+	query = f"SELECT {CODE}, {ATTEMPT_TS}, {BAN_TS}, {ATTEMPTS} FROM {TWO_FA} WHERE {NAME} = %s;"
+	cursor.execute(query, (name, ))
+
+	if (cursor.rowcount == 0):
+		return False
+
+	response = response = cursor.fetchone()
+
+	db_code = response[0]
+	print("db_code: " + db_code)
+	db_attempt_ts = response[1]
+	print("db_attempts_ts: " + db_attempt_ts)
+	db_ban_ts = response[2]
+	print("db_ban_ts:" + db_ban_ts)
+	db_attempts = response[3]
+	print("db_attempts: " + str(db_attempts))
+
+	db_attempt_ts = datetime.strptime(db_attempt_ts, '%d/%m/%Y, %H:%M:%S')
+	if db_ban_ts != '0':
+		db_ban_ts = datetime.strptime(db_ban_ts, '%d/%m/%Y, %H:%M:%S')
+
+	if (db_ban_ts == '0' or (db_ban_ts + timedelta(minutes=5)) < datetime.now()): # If the user is not banned or the ban time has already passed
+		if ((db_attempt_ts + timedelta(hours=1)) >= datetime.now()): # It hasn't passed an hour since the code has been requested
+			if (db_code == code): # The code checks
+				new_attempts = 0
+				query = f"UPDATE {TWO_FA} SET {ATTEMPTS} = {new_attempts}, {BAN_TS} = 0 WHERE {NAME} = %s"
+				cursor.execute(query, (name, ))
+				return 1
+			else :
+				return increaseAttempts(name, db_attempts)
+
+			
+		else: # It has passed an hour since the code has been requested
+			return increaseAttempts(name, db_attempts)
+	else: # User is still banned
+		return -1
+
+			
+
+
+
+	if (code == db_code):
+		return True
 
 
 
@@ -206,3 +272,18 @@ def copyRecords (cursor):
 		records.append(record)
 
 	return records
+
+def increaseAttempts(name, db_attempts):
+	new_attempts = db_attempts + 1
+
+	if (new_attempts < 3): # User has tried less than 3 times
+		query = f"UPDATE {TWO_FA} SET {ATTEMPTS} = {new_attempts} WHERE {NAME} = %s"
+		cursor.execute(query, (name, ))
+		generate_code(name)
+		return 0
+	else: # User has tried 3 times, so now will be banned for a while
+		new_attempts = 0
+		db_ban_ts = (datetime.now() + timedelta(minutes=5)).strftime("%d/%m/%Y, %H:%M:%S")
+		query = f"UPDATE {TWO_FA} SET {BAN_TS} = %s, {ATTEMPTS} = {new_attempts} WHERE {NAME} = %s"
+		cursor.execute(query, (db_ban_ts, name))
+		return -1

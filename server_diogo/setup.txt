@@ -1,5 +1,0 @@
-follow the tutorial in here:
-
-https://gist.github.com/KeithYeh/bb07cadd23645a6a62509b1ec8986bbc
-
-(PS: where it says DNS:example.com put DNS:localhost)

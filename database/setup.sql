@@ -9,8 +9,8 @@ drop table scoreboard cascade;
 create table factor_authentication (
     name varchar(80) not null,
     code varchar(4),
-    attempt_ts integer not null,
-    ban_ts integer not null,
+    attempt_ts varchar(30) not null,
+    ban_ts varchar(30) not null,
     attempts smallint not null,
     constraint pk_factor_authentication primary key(name)
 );
