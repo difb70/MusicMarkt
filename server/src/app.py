@@ -1,9 +1,33 @@
 from flask import Flask
-from flask import render_template, redirect, url_for, request
+from flask import render_template, redirect, url_for, request, session
 import sys
 import database_api as db
 
 app = Flask(__name__)
+# secret key for sessions to work
+app.secret_key = ""
+
+#################################################################################
+#
+#                               Wrappers
+#
+#################################################################################
+def login_required(func):
+    def decorated_function(*args, **kwargs):
+        # check if there was a session created for this user
+        if "cid" not in session:
+            return redirect(url_for('login'))
+        else:
+            return func(*args, **kwargs)
+    return decorated_function
+
+def create_session(cid):
+    session["cid"] = cid
+
+@login_required
+def get_session_cid():
+    return session["cid"]
+    
 
 #################################################################################
 #
@@ -97,6 +121,7 @@ def code():
 #
 #################################################################################
 @app.route('/products')
+@login_required
 def products():
     try:
         products = db.get_products()
@@ -105,6 +130,7 @@ def products():
         return render_template("error.html", error_message = e)  # Renders a page with the error.
 
 @app.route('/artists')
+@login_required
 def artists():
     try:
         artists = db.get_artists()
@@ -113,6 +139,7 @@ def artists():
         return render_template("error.html", error_message = e)  # Renders a page with the error.
 
 @app.route('/artists/scoreboard/')
+@login_required
 def menu():
     try:
         aid = request.args.get("aid")
