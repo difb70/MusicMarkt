@@ -17,6 +17,13 @@
         <br>
         <h1>Products</h1>
         <br><br>
+        
+        {% if message %}
+        <div class="alert alert-success">
+            <strong>Success!</strong> {{ message }}
+        </div>
+        {% endif %}
+
         {% if products %}
         {% if products|length > 0 %}
             <table class="table"> 

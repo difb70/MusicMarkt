@@ -129,12 +129,17 @@ def code():
 @app.route('/products')
 @login_required
 def products():
+    message = None
     try:
         pid = request.args.get("pid")
-        print(pid)
+        # a product was bought
+        if pid:
+            cid = get_session_cid()
+            db.buy_item(cid, pid)
+            message = "Product bought with success!"
 
         products = db.get_products()
-        return render_template("products.html", products=products)
+        return render_template("products.html", products=products, message=message)
     except Exception as e:
         return render_template("error.html", error_message = e)  # Renders a page with the error.
 
