@@ -82,7 +82,11 @@ def login():
 
         # check if the credentials where correct
         if (db.check_password(username, password)):
-
+            # TODO : created session here but, the session must only
+            # be set after the 2fa code verified
+            cid = db.get_cid(username)
+            create_session(cid)
+            
             db.generate_code(username)
 
             return redirect(url_for('code'))
