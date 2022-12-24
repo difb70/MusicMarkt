@@ -1,11 +1,13 @@
 from flask import Flask
 from flask import render_template, redirect, url_for, request, session
 import sys
+from functools import wraps
+from random import randint
 import database_api as db
 
 app = Flask(__name__)
 # secret key for sessions to work
-app.secret_key = ""
+app.secret_key = "secret_key"
 
 #################################################################################
 #
@@ -13,13 +15,14 @@ app.secret_key = ""
 #
 #################################################################################
 def login_required(func):
-    def decorated_function(*args, **kwargs):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
         # check if there was a session created for this user
         if "cid" not in session:
             return redirect(url_for('login'))
         else:
             return func(*args, **kwargs)
-    return decorated_function
+    return wrapper
 
 def create_session(cid):
     session["cid"] = cid
@@ -27,7 +30,6 @@ def create_session(cid):
 @login_required
 def get_session_cid():
     return session["cid"]
-    
 
 #################################################################################
 #
@@ -86,10 +88,10 @@ def login():
             # be set after the 2fa code verified
             cid = db.get_cid(username)
             create_session(cid)
-            
-            db.generate_code(username)
 
-            return redirect(url_for('code'))
+            #db.generate_code(username)
+            #return redirect(url_for('code'))
+            return redirect(url_for('products'))
         else :
             error = "Incorrect credentials"
 
