@@ -126,7 +126,7 @@ def code():
 #                               Menu Page
 #
 #################################################################################
-@app.route('/products')
+@app.route('/products/')
 @login_required
 def products():
     message = None
@@ -141,22 +141,7 @@ def products():
         products = db.get_products()
         return render_template("products.html", products=products, message=message)
     except Exception as e:
-        return render_template("error.html", error_message = e)  # Renders a page with the error.
-
-"""
-@app.route('/products/buy/')
-@login_required
-def products():
-    try:
-        cid = get_session_cid()
-        pid = request.args.get("pid")
-        product = db.get_product()
-        
-        db.buy_item(cid, pid)
-        return render_template("success.html", product=product)
-    except Exception as e:
-        return render_template("error.html", error_message = e)  # Renders a page with the error.
-"""
+        return render_template("error.html", error_message = e)  # Renders a page with the error
 
 @app.route('/artists')
 @login_required
@@ -172,11 +157,8 @@ def artists():
 def menu():
     try:
         aid = request.args.get("aid")
-
-        print(aid)
         artist = db.get_artist_name(aid)
         scoreboard = db.get_scoreboard(aid)
-        print(artist, scoreboard)
 
         return render_template("scoreboard.html", scoreboard=scoreboard, artist=artist)
     except Exception as e:
