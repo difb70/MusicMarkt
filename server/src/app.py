@@ -130,10 +130,28 @@ def code():
 @login_required
 def products():
     try:
+        pid = request.args.get("pid")
+        print(pid)
+
         products = db.get_products()
         return render_template("products.html", products=products)
     except Exception as e:
         return render_template("error.html", error_message = e)  # Renders a page with the error.
+
+"""
+@app.route('/products/buy/')
+@login_required
+def products():
+    try:
+        cid = get_session_cid()
+        pid = request.args.get("pid")
+        product = db.get_product()
+        
+        db.buy_item(cid, pid)
+        return render_template("success.html", product=product)
+    except Exception as e:
+        return render_template("error.html", error_message = e)  # Renders a page with the error.
+"""
 
 @app.route('/artists')
 @login_required
