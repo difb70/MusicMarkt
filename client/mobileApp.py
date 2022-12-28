@@ -1,5 +1,6 @@
 import socket
 import rsa
+from cryptography.fernet import Fernet
 
 HOST = "127.0.0.1"
 PORT = 65432
@@ -7,18 +8,10 @@ PORT = 65432
 # encrypt client -> server : privClient -> pubAPI
 # decrypt server -> client : privClient -> pubAPI
 
-#fazer uma signature para cada
-
-#pode ser util para mensagens que sabe se que sao sempre iguais
-#signature = rsa.sign(message.encode(), private_key, "SHA-256")
-
-def encryptPrivateClient(msg, privateKey):
-    return rsa.encrypt(msg.enconde('utf-8'), privateKey)
+# encriptar com a publica do outro, e depois com o secret
 
 def encryptPublicAPI(msg, publicKey):
-    return rsa.encrypt(msg.enconde('utf-8'), publicKey)
-
-# KprivClient(KpubAPI(M))
+    return rsa.encrypt(msg.encode('utf-8'), publicKey)
 
 def decryptPrivateClient(cyphertext, privateKey):
     try:
@@ -26,29 +19,30 @@ def decryptPrivateClient(cyphertext, privateKey):
     except:
         return False
 
-def decryptPublicAPI(cyphertext, publicKey):
-    try:
-        return rsa.decrypt(cyphertext, publicKey).decode('utf-8')
-    except:
-        return False
+def loadSecretKey():
+
+    return open("client_keys/secretKey.key", "rb").read()
 
 
 
-def verifyMessage(message, privateKey, publicKey):
+def verifyMessage(message, privateKey, sharedKey):
     #TODO message should be decrypted here and also check for integrity and authenticity
     #TODO if everything checks out
+
+    #shared key decryption
+    key_fernet_alg = Fernet(sharedKey)
+    decryptedSecret = key_fernet_alg.decrypt(message)
+
+    responseEncrypted = decryptedSecret.decode('utf-8')
     
-    decryptedPrivate = decryptPrivateClient(message, privateKey)
+    decryptedPrivate = decryptPrivateClient(responseEncrypted, privateKey)
 
     if(decryptedPrivate == False):
         return False
 
-    response = decryptPublicAPI(decryptedPrivate, publicKey)
-
-    if(response == False):
-        return False
+    #TODO check integrity
     
-    return response
+    return decryptedPrivate
 
 
 
@@ -57,6 +51,8 @@ with open("client_keys/clientPrivate.pem", "rb") as f:
 
 with open("api_keys/apiPublic.pem", "rb") as f:
     apiPublicKey = rsa.PublicKey.load_pkcs1(f.read())
+
+secretKey = loadSecretKey()
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
     sock.bind((HOST, PORT))
@@ -74,7 +70,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
                     if not data:
                         break
                     
-                    message = verifyMessage(data, clientPrivateKey, apiPublicKey)
+                    message = verifyMessage(data, clientPrivateKey, secretKey)
                     
                     if (message != False):
                         response = "OK"
@@ -83,8 +79,13 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
                     
                     # TODO response should be encrypted (guarantees confidentiality, integrity and authenticity)
 
-                    encryptedPrivateResponse = encryptedPrivateResponse(response, clientPrivateKey)
-                    encryptedResponse = encryptPublicAPI(encryptedPrivateResponse, apiPublicKey)
+                    #TODO integrity
+
+                    encryptedPublicResponse = encryptPublicAPI(response, apiPublicKey)
+
+
+                    key_fernet = Fernet(secretKey)
+                    encryptedResponse = key_fernet.encrypt(encryptedPublicResponse.encode('utf-8'))
 
                     conn.sendall(encryptedResponse)
         except socket.timeout:
