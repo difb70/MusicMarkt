@@ -44,9 +44,11 @@ CREATE DATABASE musicmarkt
 exit
 sudo nano /etc/postgresql/12/main/postgresql.conf
 # uncomment listen_addresses and make it equal "192.168.1.1 (local ipv4)"
+# verify that the property ssl is uncommented and with value on
+
 sudo nano /etc/postgresql/12/main/postgresql/pg_hba.conf
 # add the following line : 
-# host    musicmarkt      <user-name>           192.168.0.0/24          md5
+# host    musicmarkt      <user-name>           192.168.0.0/24          md5 clientcert=verify-full
 ```
 
 ---
