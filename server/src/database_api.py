@@ -4,8 +4,6 @@ import hashlib
 import os
 from random import randint
 from datetime import *
-
-# TODO for the Diogo pc to run, the code below should be removed
 from cfg.database_cfg import DB_CONNECTION_STRING
 
 import mobileApp_api as mobileApp
@@ -15,14 +13,6 @@ DB_USER = "postgres"
 DB_DATABASE = "musicmarkt"
 DB_PASSWORD = "postgres"
 
-# TODO for the Diogo pc to run, the code below should be uncommented
-#DB_CONNECTION_STRING = "host=%s port=5433 dbname=%s user=%s password=%s" % (
-#    DB_HOST,
-#    DB_DATABASE,
-#    DB_USER,
-#    DB_PASSWORD,
-#)
-
 connection, cursor = (None, None)
 
 #   CONNECTION
@@ -31,7 +21,7 @@ connection, cursor = (None, None)
 def connect():
 	global connection, cursor
 	try:
-		connection = psycopg2.connect(DB_CONNECTION_STRING)
+		connection = psycopg2.connect(DB_CONNECTION_STRING, connect_timeout=3)
 		cursor = connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
 	except Exception as e :
 		print(e)
