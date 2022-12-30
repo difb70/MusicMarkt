@@ -169,5 +169,5 @@ if __name__ == '__main__':
     # create database connection
     db.connect()
     # TODO for the Diogo pc to run, the code below should be replaced by app.run(ssl_context=('adhoc'))
-    app.run(ssl_context=('keys/cert.pem', 'keys/key.pem'))
+    app.run(ssl_context=('./src/keys/cert.pem', './src/keys/key.pem'), host='0.0.0.0')
     db.close()
