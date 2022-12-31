@@ -1,5 +1,6 @@
 # clean previous configuration
 sudo iptables -F
+sudo iptables -t nat -F
 
 # api can only send and receive
 # packets never forward them
