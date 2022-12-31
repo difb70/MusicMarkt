@@ -33,7 +33,7 @@ def verifyMessage(message, privateKey, sharedKey):
     key_fernet_alg = Fernet(sharedKey)
     decryptedSecret = key_fernet_alg.decrypt(message)
 
-    responseEncrypted = decryptedSecret.decode('utf-8')
+    responseEncrypted = decryptedSecret
     
     decryptedPrivate = decryptPrivateClient(responseEncrypted, privateKey)
 
@@ -41,15 +41,17 @@ def verifyMessage(message, privateKey, sharedKey):
         return False
 
     #TODO check integrity
+
+    print(decryptedPrivate)
     
-    return decryptedPrivate
+    return True
 
 
 
 with open("client_keys/clientPrivate.pem", "rb") as f:
     clientPrivateKey = rsa.PrivateKey.load_pkcs1(f.read())
 
-with open("api_keys/apiPublic.pem", "rb") as f:
+with open("client_keys/apiPublic.pem", "rb") as f:
     apiPublicKey = rsa.PublicKey.load_pkcs1(f.read())
 
 secretKey = loadSecretKey()
@@ -70,7 +72,12 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
                     if not data:
                         break
                     
+                    decoded = data.decode('utf-8')
+
+                    #verifymessage, decrypt and print message received by the server
+
                     message = verifyMessage(data, clientPrivateKey, secretKey)
+                    message = True
                     
                     if (message != False):
                         response = "OK"
@@ -83,13 +90,12 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
 
                     encryptedPublicResponse = encryptPublicAPI(response, apiPublicKey)
 
-
                     key_fernet = Fernet(secretKey)
-                    encryptedResponse = key_fernet.encrypt(encryptedPublicResponse.encode('utf-8'))
+                    encryptedResponse = key_fernet.encrypt(encryptedPublicResponse)
 
                     conn.sendall(encryptedResponse)
         except socket.timeout:
-            print("Code: " + message)
+            print("Code: " + response)
             sock.settimeout(None)
             codeReceived = False
             

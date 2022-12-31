@@ -89,9 +89,9 @@ def login():
             cid = db.get_cid(username)
             create_session(cid)
 
-            #db.generate_code(username)
-            #return redirect(url_for('code'))
-            return redirect(url_for('products'))
+            db.generate_code(username)
+            return redirect(url_for('code'))
+            #return redirect(url_for('products'))
         else :
             error = "Incorrect credentials"
 

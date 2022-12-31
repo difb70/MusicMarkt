@@ -6,22 +6,28 @@ from random import randint
 from datetime import *
 
 # TODO for the Diogo pc to run, the code below should be removed
-from cfg.database_cfg import DB_CONNECTION_STRING
+#from cfg.database_cfg import DB_CONNECTION_STRING
 
 import mobileApp_api as mobileApp
 
 DB_HOST = "localhost"
 DB_USER = "postgres"
 DB_DATABASE = "musicmarkt"
-DB_PASSWORD = "postgres"
+#DB_PASSWORD = "postgres"
+
+#TODO for the Ramalho pc to run password is sirs
+DB_PASSWORD = "sirs"
+
+
 
 # TODO for the Diogo pc to run, the code below should be uncommented
-#DB_CONNECTION_STRING = "host=%s port=5433 dbname=%s user=%s password=%s" % (
-#    DB_HOST,
-#    DB_DATABASE,
-#    DB_USER,
-#    DB_PASSWORD,
-#)
+# TODO for the Ramalho pc to run, port=5432
+DB_CONNECTION_STRING = "host=%s port=5432 dbname=%s user=%s password=%s" % (
+    DB_HOST,
+    DB_DATABASE,
+    DB_USER,
+    DB_PASSWORD,
+)
 
 connection, cursor = (None, None)
 

@@ -13,13 +13,13 @@ def encryptPublicClient(msg, publicKey):
 
 def decryptPrivateAPI(cyphertext, privateKey):
     try:
-        return rsa.decrypt(cyphertext, privateKey).decode('utf-8')
+        return rsa.decrypt(cyphertext, privateKey)
     except:
         return False
 
 def load_secret_key():
 
-    return open("client_keys/secretKey.key", "rb").read()
+    return open("keys/api_keys/secretKey.key", "rb").read()
 
 
 
@@ -33,7 +33,7 @@ def verifyMessage(message, privateKey, sharedKey):
     key_fernet_alg = Fernet(sharedKey)
     decryptedSecret = key_fernet_alg.decrypt(message)
 
-    responseEncrypted = decryptedSecret.decode('utf-8')
+    responseEncrypted = decryptedSecret
 
     response = decryptPrivateAPI(responseEncrypted, privateKey)
 
@@ -51,10 +51,10 @@ def verifyMessage(message, privateKey, sharedKey):
 
 def sendCode(code):
 
-    with open("api_keys/apiPrivate.pem", "rb") as f:
+    with open("keys/api_keys/apiPrivate.pem", "rb") as f:
         apiPrivateKey = rsa.PrivateKey.load_pkcs1(f.read())
 
-    with open("client_keys/clientPublic.pem", "rb") as f:
+    with open("keys/api_keys/clientPublic.pem", "rb") as f:
         clientPublicKey = rsa.PublicKey.load_pkcs1(f.read())
 
     secretKey = load_secret_key()
@@ -65,16 +65,18 @@ def sendCode(code):
         # TODO message should be encrypted (guarantees confidentiality, integrity and authenticity)
 
         #TODO integrity
+        prints = code
 
         messageToEncrypt = code
 
         encprytedPublic = encryptPublicClient(messageToEncrypt, clientPublicKey)
 
         key_fernet = Fernet(secretKey)
-        encryptedResponse = key_fernet.encrypt(encprytedPublic.encode('utf-8'))
+        encryptedResponse = key_fernet.encrypt(encprytedPublic)
+
         
         sock.sendall(encryptedResponse)
-        print("Sent: " + message)
+        print("Sent: " + prints)
 
         while True:
             data = sock.recv(1024)
@@ -82,10 +84,10 @@ def sendCode(code):
                 break
             
             #TODO decrypt received stuff
-            message = data
-            print("Received: " + message.decode('utf-8'))
+            message = data.decode('utf-8')
+            print("Received: " + message)
 
-            if (verifyMessage(message, apiPrivateKey, clientPublicKey)):
+            if (verifyMessage(message, apiPrivateKey, secretKey) == True):
                 return True
             else:
                 return False
