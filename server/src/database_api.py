@@ -12,13 +12,13 @@ import mobileApp_api as mobileApp
 
 # TODO for the Diogo pc to run, the code below should be removed
 #from cfg.database_cfg import DB_CONNECTION_STRING
-DB_HOST = "localhost"
-DB_USER = "postgres"
-DB_DATABASE = "musicmarkt"
+#DB_HOST = "localhost"
+#DB_USER = "postgres"
+#DB_DATABASE = "musicmarkt"
 #DB_PASSWORD = "postgres"
 
 #TODO for the Ramalho pc to run password is sirs
-DB_PASSWORD = "sirs"
+#DB_PASSWORD = "sirs"
 
 connection, cursor = (None, None)
 
