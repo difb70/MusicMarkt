@@ -1,12 +1,14 @@
 import socket
 import rsa
+import hmac
+import hashlib
 from cryptography.fernet import Fernet
 
 SERVER_HOST = "127.0.0.1"
 SERVER_PORT = 65432
 
-# encrypt server -> client : privAPI -> pubClient
-# decrypt client -> server : privAPI -> pubClient
+secret_hash = "A09-alameda"
+
 
 def encryptPublicClient(msg, publicKey):
     return rsa.encrypt(msg.encode('utf-8'), publicKey)
@@ -19,19 +21,37 @@ def decryptPrivateAPI(cyphertext, privateKey):
 
 def load_secret_key():
 
-    return open("keys/api_keys/secretKey.key", "rb").read()
+    return open("src/keys/api_keys/secretKey.key", "rb").read()
 
+def hash_hmac(key, message):
+    hash_object = hmac.new(key.encode(), message.encode(), hashlib.sha256)
 
+    hmac_value = hash_object.digest()
 
-def verifyMessage(message, privateKey, sharedKey):
-    #TODO message should be decrypted here and also check for integrity and authenticity
-    #TODO if everything checks out
+    return hmac_value
 
-    #TODO integrity
+def check_hash(key, messageBytes, hash):
+    hash_object = hmac.new(key.encode(), messageBytes, hashlib.sha256)
+
+    hmac_value = hash_object.digest()
+
+    if(hmac_value == hash):
+        return True
+    else:
+        return False
+
+def verifyMessage(message, privateKey, sharedKey, secret_hash):
+
+    hashed = message[-32:]
+    messageEncrypted = message[:-32]
 
     #shared key decryption
     key_fernet_alg = Fernet(sharedKey)
-    decryptedSecret = key_fernet_alg.decrypt(message)
+
+    try:
+        decryptedSecret = key_fernet_alg.decrypt(messageEncrypted)
+    except:
+        return False
 
     responseEncrypted = decryptedSecret
 
@@ -40,21 +60,23 @@ def verifyMessage(message, privateKey, sharedKey):
     if(response == False):
         return False
 
-    if response == "OK":
+    hashes_match = check_hash(secret_hash, response, hashed)
+    
+    if(not(hashes_match)):
+        return False
+
+    if response.decode('utf-8') == "OK":
         return True
     else:
         return False
 
-    #TODO if not
-    #return False
-
 
 def sendCode(code):
 
-    with open("keys/api_keys/apiPrivate.pem", "rb") as f:
+    with open("src/keys/api_keys/apiPrivate.pem", "rb") as f:
         apiPrivateKey = rsa.PrivateKey.load_pkcs1(f.read())
 
-    with open("keys/api_keys/clientPublic.pem", "rb") as f:
+    with open("src/keys/api_keys/clientPublic.pem", "rb") as f:
         clientPublicKey = rsa.PublicKey.load_pkcs1(f.read())
 
     secretKey = load_secret_key()
@@ -62,19 +84,19 @@ def sendCode(code):
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
         sock.connect((SERVER_HOST, SERVER_PORT))
 
-        # TODO message should be encrypted (guarantees confidentiality, integrity and authenticity)
-
-        #TODO integrity
         prints = code
 
         messageToEncrypt = code
 
-        encprytedPublic = encryptPublicClient(messageToEncrypt, clientPublicKey)
+        hash_to_send = hash_hmac(secret_hash, code)
+
+        encryptedPublicResponse = encryptPublicClient(messageToEncrypt, clientPublicKey)
 
         key_fernet = Fernet(secretKey)
-        encryptedResponse = key_fernet.encrypt(encprytedPublic)
+        encryptedResponse = key_fernet.encrypt(encryptedPublicResponse)
 
-        
+        encryptedResponse = encryptedResponse + hash_to_send
+
         sock.sendall(encryptedResponse)
         print("Sent: " + prints)
 
@@ -82,12 +104,12 @@ def sendCode(code):
             data = sock.recv(1024)
             if not data:
                 break
-            
-            #TODO decrypt received stuff
-            message = data.decode('utf-8')
-            print("Received: " + message)
 
-            if (verifyMessage(message, apiPrivateKey, secretKey) == True):
+            verification = verifyMessage(data, apiPrivateKey, secretKey, secret_hash)
+            
+            print(verification)
+
+            if (verification == True):
                 return True
             else:
                 return False

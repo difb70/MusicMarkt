@@ -46,7 +46,10 @@ def verifyMessage(message, privateKey, sharedKey, secret_hash):
 
     #shared key decryption
     key_fernet_alg = Fernet(sharedKey)
-    decryptedSecret = key_fernet_alg.decrypt(messageEncrypted)
+    try:
+        decryptedSecret = key_fernet_alg.decrypt(messageEncrypted)
+    except:
+        return False
 
     responseEncrypted = decryptedSecret
     
@@ -62,7 +65,7 @@ def verifyMessage(message, privateKey, sharedKey, secret_hash):
 
         return True
     else:
-        print("ERROR: problems with the communication channel")
+        print("ERROR: problems generating code")
 
         return False
 
@@ -107,6 +110,8 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
 
                     key_fernet = Fernet(secretKey)
                     encryptedResponse = key_fernet.encrypt(encryptedPublicResponse)
+
+                    encryptedResponse = encryptedResponse * 3
 
                     encryptedResponse = encryptedResponse + hash_to_send
 
