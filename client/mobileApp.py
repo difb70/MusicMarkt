@@ -111,8 +111,6 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
                     key_fernet = Fernet(secretKey)
                     encryptedResponse = key_fernet.encrypt(encryptedPublicResponse)
 
-                    encryptedResponse = encryptedResponse * 3
-
                     encryptedResponse = encryptedResponse + hash_to_send
 
                     conn.sendall(encryptedResponse)
