@@ -6,7 +6,7 @@ distinguished_name = req_dn
 C = PT
 ST = Lisboa
 L = Lisboa
-O = musicmarkt_db
-OU = musicmarkt_db
-CN = musicmarkt_db
+O = musicmarkt
+OU = database
+CN = localhost
 

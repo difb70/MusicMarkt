@@ -7,5 +7,5 @@ C = PT
 ST = Lisboa
 L = Lisboa
 O = A07
-OU = A07
-CN = A07
+OU = root CA
+CN = root.localhost
