@@ -18,7 +18,7 @@ def decryptPrivateAPI(cyphertext, privateKey):
 
 def load_secret_key():
 
-    return open("src/keys/api_keys/secretKey.key", "rb").read()
+    return open("../keys/2fa_keys/secretKey.key", "rb").read()
 
 def hash_hmac(key, message):
     hash_object = hmac.new(key.encode(), message.encode(), hashlib.sha256)
@@ -70,13 +70,13 @@ def verifyMessage(message, privateKey, sharedKey, secret_hash):
 
 def sendCode(code):
 
-    with open("src/keys/api_keys/apiPrivate.pem", "rb") as f:
+    with open("../keys/2fa_keys/apiPrivate.pem", "rb") as f:
         apiPrivateKey = rsa.PrivateKey.load_pkcs1(f.read())
 
-    with open("src/keys/api_keys/clientPublic.pem", "rb") as f:
+    with open("../keys/2fa_keys/clientPublic.pem", "rb") as f:
         clientPublicKey = rsa.PublicKey.load_pkcs1(f.read())
 
-    secret_hash_file = open("src/keys/api_keys/secretKey.txt", "r")
+    secret_hash_file = open("../keys/2fa_keys/secretKey.txt", "r")
     secret_hash = secret_hash_file.readline()
 
     secretKey = load_secret_key()
