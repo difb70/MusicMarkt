@@ -7,6 +7,6 @@ C = PT
 ST = Lisboa
 L = Lisboa
 O = musicmarkt
-OU = musicmarkt
-CN = www.musicmarkt.com
+OU = api
+CN = *.localhost
 
