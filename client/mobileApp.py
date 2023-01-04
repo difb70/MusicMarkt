@@ -79,7 +79,8 @@ with open("client_keys/apiPublic.pem", "rb") as f:
 
 secretKey = loadSecretKey()
 
-secret_hash = "A09-alameda"
+secret_hash_file = open("client_keys/secretKey.txt", "r")
+secret_hash = secret_hash_file.readline()
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
     sock.bind((HOST, PORT))

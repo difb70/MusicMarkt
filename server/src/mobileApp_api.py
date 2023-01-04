@@ -7,9 +7,6 @@ from cryptography.fernet import Fernet
 SERVER_HOST = "127.0.0.1"
 SERVER_PORT = 65432
 
-secret_hash = "A09-alameda"
-
-
 def encryptPublicClient(msg, publicKey):
     return rsa.encrypt(msg.encode('utf-8'), publicKey)
 
@@ -78,6 +75,9 @@ def sendCode(code):
 
     with open("src/keys/api_keys/clientPublic.pem", "rb") as f:
         clientPublicKey = rsa.PublicKey.load_pkcs1(f.read())
+
+    secret_hash_file = open("src/keys/api_keys/secretKey.txt", "r")
+    secret_hash = secret_hash_file.readline()
 
     secretKey = load_secret_key()
 
