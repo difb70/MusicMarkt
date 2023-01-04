@@ -1,3 +1,6 @@
 *.pem
+*.csr
+*.cnf
+*.srl
 *__pycache__/
 */cfg/*
