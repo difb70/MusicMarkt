@@ -1,9 +1,13 @@
 #!/bin/sh
-rm -fr *.pem
-rm -fr *.srl
+rm -fr *.key
+rm -fr *.crt
 rm -fr *.csr
 
-echo "generating https cetificate ..."
-openssl genrsa -out api_server.key.pem 4096
-openssl req -new -nodes -config configuration/api.cnf -key api_server.key.pem -out api_server.csr
-openssl x509 -req -days 365 -in api_server.csr -CA ../ca_keys/ca.cert.pem -CAkey ../ca_keys/ca.key.pem -CAcreateserial -out api_server.cert.pem
+
+echo "generating database server certificate ..."
+sudo openssl req -new -nodes -text -config configuration/api.cnf \
+    -out api.csr -keyout api.key
+sudo chmod og-rwx api.key
+sudo openssl x509 -req -in api.csr -text -days 365 \
+  -CA ../ca_keys/root_ca.crt -CAkey ../ca_keys/root_ca.key -CAcreateserial \
+  -out api.crt -extfile configuration/v3.ext

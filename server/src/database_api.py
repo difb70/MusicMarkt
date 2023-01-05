@@ -28,7 +28,7 @@ connection, cursor = (None, None)
 def connect():
 	global connection, cursor
 	try:
-		connection = psycopg2.connect(DB_CONNECTION_STRING, connect_timeout=3)
+		connection = psycopg2.connect(DB_CONNECTION_STRING, connect_timeout=3, sslmode='verify-ca', sslcert="../keys/database_keys/client.crt", sslkey="../keys/database_keys/client.key", sslrootcert="../keys/ca_keys/root_ca.crt")
 		cursor = connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
 	except Exception as e :
 		print(e)
