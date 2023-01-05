@@ -18,9 +18,9 @@ def login_required(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         # check if there was a session created for this user
-        if "cid" not in session:
+        if "cid" not in session or "username" not in session or "code" not in session:
             return redirect(url_for('login'))
-	elif not session["code"]:
+        elif not session["code"]:
             return redirect(url_for('login'))
         else:
             return func(*args, **kwargs)
@@ -30,6 +30,16 @@ def create_session(cid, username):
     session["cid"] = cid
     session["username"] = username
     session["code"] = False
+
+def logout_required(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        # check if a old session is still stored
+        if "cid" in session and "username" and session and "code" in session and session["code"]:
+            return redirect(url_for('products'))
+        else:
+            return func(*args, **kwargs)
+    return wrapper
 
 @login_required
 def get_session_cid():
@@ -41,6 +51,7 @@ def get_session_cid():
 #
 #################################################################################
 @app.route('/')
+@logout_required
 def initialPage():
     try:
         return render_template("initialPage.html")
@@ -54,6 +65,7 @@ def initialPage():
 #
 #################################################################################
 @app.route('/register', methods=['GET', 'POST'])
+@logout_required
 def register():
     error = None
     if request.method == 'POST':
@@ -77,6 +89,7 @@ def register():
 #
 #################################################################################
 @app.route('/login', methods=['GET', 'POST'])
+@logout_required
 def login():
     error = None
     if request.method == 'POST':
