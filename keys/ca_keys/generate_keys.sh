@@ -1,10 +1,12 @@
 #!/bin/sh
-rm -fr *.pem
+rm -fr *.key
 rm -fr *.srl
 rm -fr *.csr
+rm -fr *.crt
 
 echo "generating root CA ..."
-openssl genrsa -out ca.key.pem 4096
-openssl req -new -nodes -config configuration/ca.cnf -key ca.key.pem -out ca.csr
-openssl x509 -req -days 365 -in ca.csr -signkey ca.key.pem -out ca.cert.pem
-echo 01 > ca.cert.srl
+sudo openssl req -new -nodes -text -config configuration/ca.cnf \
+    -out root_ca.csr -keyout root_ca.key
+sudo chmod og-rwx root_ca.key
+sudo openssl x509 -req -in root_ca.csr -text -days 365 \
+    -signkey root_ca.key -out root_ca.crt

@@ -1,17 +1,21 @@
 #!/bin/sh
-rm -fr *.pem
-rm -fr *.srl
+rm -fr *.key
+rm -fr *.crt
 rm -fr *.csr
 
 echo "generating database server certificate ..."
-openssl genrsa -out db_server.key.pem 4096
-openssl req -new -nodes -config configuration/db.cnf -key db_server.key.pem -out db_server.csr
-# self sign
-openssl x509 -req -days 365 -in db_server.csr -signkey db_server.key.pem -out db_server.cert.pem
-echo 01 > db_server.cert.srl
-
+sudo openssl req -new -nodes -text -config configuration/db.cnf \
+    -out database.csr -keyout database.key
+sudo chmod og-rwx database.key
+sudo chown postgres:postgres database.key
+sudo openssl x509 -req -in database.csr -text -days 365 \
+  -CA ../ca_keys/root_ca.crt -CAkey ../ca_keys/root_ca.key -CAcreateserial \
+  -out database.crt
 
 echo "generating database client certificate ..."
-openssl genrsa -out db_client.key.pem 4096
-openssl req -new -nodes -config configuration/api.cnf -key db_client.key.pem -out db_client.csr
-openssl x509 -req -days 365 -in db_client.csr -CA ../ca_keys/ca.cert.pem -CAkey ../ca_keys/ca.key.pem -CAcreateserial -out db_client.cert.pem
+sudo openssl req -new -nodes -text -config configuration/api.cnf \
+    -out client.csr -keyout client.key
+sudo chmod og-rwx client.key
+sudo openssl x509 -req -in client.csr -text -days 365 \
+  -CA ../ca_keys/root_ca.crt -CAkey ../ca_keys/root_ca.key -CAcreateserial \
+  -out client.crt
