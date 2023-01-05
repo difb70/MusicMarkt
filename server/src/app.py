@@ -18,7 +18,9 @@ def login_required(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         # check if there was a session created for this user
-        if "cid" not in session and not session["code"]:
+        if "cid" not in session:
+            return redirect(url_for('login'))
+	elif not session["code"]:
             return redirect(url_for('login'))
         else:
             return func(*args, **kwargs)
@@ -172,5 +174,5 @@ if __name__ == '__main__':
     # create database connection
     db.connect()
     # TODO for the Diogo pc to run, the code below should be replaced by app.run(ssl_context=('adhoc'))
-    app.run(ssl_context=('../keys/api_keys/api_server.cert.pem', '../keys/api_keys/api_server.key.pem'), host='0.0.0.0')
+    app.run(ssl_context=('../keys/api_keys/api.crt', '../keys/api_keys/api.key'), host='0.0.0.0')
     db.close()
