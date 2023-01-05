@@ -2,5 +2,7 @@
 *.csr
 *.cnf
 *.srl
+*.key
+*.crt
 *__pycache__/
 */cfg/*
