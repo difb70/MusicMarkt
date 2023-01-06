@@ -4,14 +4,21 @@ import hashlib
 import os
 from random import randint
 from datetime import *
+
+
 from cfg.database_cfg import DB_CONNECTION_STRING
 
 import mobileApp_api as mobileApp
 
-DB_HOST = "localhost"
-DB_USER = "postgres"
-DB_DATABASE = "musicmarkt"
-DB_PASSWORD = "postgres"
+# TODO for the Diogo pc to run, the code below should be removed
+#from cfg.database_cfg import DB_CONNECTION_STRING
+#DB_HOST = "localhost"
+#DB_USER = "postgres"
+#DB_DATABASE = "musicmarkt"
+#DB_PASSWORD = "postgres"
+
+#TODO for the Ramalho pc to run password is sirs
+#DB_PASSWORD = "sirs"
 
 connection, cursor = (None, None)
 
@@ -21,7 +28,7 @@ connection, cursor = (None, None)
 def connect():
 	global connection, cursor
 	try:
-		connection = psycopg2.connect(DB_CONNECTION_STRING, connect_timeout=3)
+		connection = psycopg2.connect(DB_CONNECTION_STRING, connect_timeout=3, sslmode='verify-ca', sslcert="../keys/database_keys/client.crt", sslkey="../keys/database_keys/client.key", sslrootcert="../keys/ca_keys/root_ca.crt")
 		cursor = connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
 	except Exception as e :
 		print(e)

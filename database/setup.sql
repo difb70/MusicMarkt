@@ -1,10 +1,10 @@
 -- drop previous tables
 
-drop table factor_authentication cascade;
-drop table client cascade;
-drop table product cascade;
-drop table artist cascade;
-drop table scoreboard cascade;
+drop table if exists factor_authentication cascade;
+drop table if exists client cascade;
+drop table if exists product cascade;
+drop table if exists artist cascade;
+drop table if exists scoreboard cascade;
 
 create table factor_authentication (
     name varchar(80) not null,

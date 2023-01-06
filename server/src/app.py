@@ -18,14 +18,28 @@ def login_required(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         # check if there was a session created for this user
-        if "cid" not in session:
+        if "cid" not in session or "username" not in session or "code" not in session:
+            return redirect(url_for('login'))
+        elif not session["code"]:
             return redirect(url_for('login'))
         else:
             return func(*args, **kwargs)
     return wrapper
 
-def create_session(cid):
+def create_session(cid, username):
     session["cid"] = cid
+    session["username"] = username
+    session["code"] = False
+
+def logout_required(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        # check if a old session is still stored
+        if "cid" in session and "username" and session and "code" in session and session["code"]:
+            return redirect(url_for('products'))
+        else:
+            return func(*args, **kwargs)
+    return wrapper
 
 @login_required
 def get_session_cid():
@@ -37,6 +51,7 @@ def get_session_cid():
 #
 #################################################################################
 @app.route('/')
+@logout_required
 def initialPage():
     try:
         return render_template("initialPage.html")
@@ -50,6 +65,7 @@ def initialPage():
 #
 #################################################################################
 @app.route('/register', methods=['GET', 'POST'])
+@logout_required
 def register():
     error = None
     if request.method == 'POST':
@@ -73,6 +89,7 @@ def register():
 #
 #################################################################################
 @app.route('/login', methods=['GET', 'POST'])
+@logout_required
 def login():
     error = None
     if request.method == 'POST':
@@ -87,11 +104,11 @@ def login():
             # TODO : created session here but, the session must only
             # be set after the 2fa code verified
             cid = db.get_cid(username)
-            create_session(cid)
+            create_session(cid, username)
 
-            #db.generate_code(username)
-            #return redirect(url_for('code'))
-            return redirect(url_for('products'))
+            db.generate_code(username)
+            return redirect(url_for('code'))
+            #return redirect(url_for('products'))
         else :
             error = "Incorrect credentials"
 
@@ -105,12 +122,13 @@ def code():
         print(code)
 
         #TODO in here we should pass the name of the client associated to the session
-        name = 'difb70' # for debug
+        #name = 'difb70' # for debug
         
-        status = db.check_code(name, code)
+        status = db.check_code(session["username"], code)
         print("status: " + str(status))
 
         if (status == 1): # Code checks
+            session["code"] = True
             return redirect(url_for('products'))
         elif (status == 0): # Code doesn't check but has more attempts
             error = "Wrong code"
@@ -169,5 +187,5 @@ if __name__ == '__main__':
     # create database connection
     db.connect()
     # TODO for the Diogo pc to run, the code below should be replaced by app.run(ssl_context=('adhoc'))
-    app.run(ssl_context=('./src/keys/cert.pem', './src/keys/key.pem'), host='0.0.0.0')
+    app.run(ssl_context=('../keys/api_keys/api.crt', '../keys/api_keys/api.key'), host='0.0.0.0')
     db.close()
