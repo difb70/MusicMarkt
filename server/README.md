@@ -1,20 +1,57 @@
-# SIRS
+## API
+The API server is the main component of this project. It's main purpose is to serve the webapp service and make the communication with the database.
 
-### This on Router
-. _iptables -t nat -A PREROUTING -p tcp -i enp0s3 --dport 5000 -j DNAT --to-destination 192.168.0.100:5000_\
-. _iptables -A FORWARD -p tcp -d 192.168.0.100 --dport 5000 -m state --state NEW,ESTABLISHED,RELATED -j ACCEPT_
+### Setup
 
+1. Enable packet forwarding form host machine to the virtual machine
+a. On VirtualBox version 7 press `ctrl + h`
+b. Goto the `NAT Networks > Port Forwarding` tab 
+c. Add the following rule :
+    ```
+    # name   protocol    host ip   host port   guest ip    guest port
+    Rule 1     TCP      127.0.0.1    5000      10.0.2.?       5000
 
-### This on AppServer
-. _export FLASK_APP=app_\
-. _export FLASK_DEBUG=1_\
-. _python3 -m flask run --host=192.168.0.100_
+    # the host ip to use can be found in the router  
+    # machine running ifconfig, use the ip associated 
+    # with the nat network interface 
+    ```
+    
+2. Setup firewalls in all machines, but most importantly on the router
+    ```shell
+    # on the router
+    /musicmarkt/firewalls/router.sh
+    /musicmarkt/firewalls/save_firewall.sh
 
+    # on the api
+    /musicmarkt/firewalls/api.sh
+    /musicmarkt/firewalls/save_firewall.sh
 
-### This on VirtualBox
-. _add the following port forwarding rule to the router NAT Network_\
-. _&emsp; Rule 2 &emsp; TCP &emsp; 127.0.0.1 &emsp; 5000 &emsp; 10.0.2.15 &emsp; 5000_
+    # on the database
+    /musicmarkt/firewalls/database.sh
+    /musicmarkt/firewalls/save_firewall.sh
+    ```
 
+3. Generate keys and certificates for the API:
+    ```shell
+    # if the root CA where not already generated (the root CA certificate must be the same to sign all other certificates)
+    ./musicmarkt/keys/ca_keys/generate_keys.sh
 
-### This on Browser (localhost)
-. _127.0.0.1:5000_
+    # generate api key pair and associated certificate
+    ./musicmarkt/keys/api_keys/generate_keys.sh
+    ```
+
+4. Generate database client keys and certificates : 
+    ```shell
+    # assuming that the root CA was already created
+    # generate database client key pair and associated certificate
+    ./musicmarkt/keys/api_keys/generate_keys.sh
+    ```
+
+<br>
+
+---
+### Run
+```shell
+cd /musicmarkt/server
+./run.sh
+```
